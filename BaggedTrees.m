@@ -11,6 +11,7 @@ function [ oobErr ] = BaggedTrees( X, Y, numBags )
 %   bagging function
 n = size(X,1);
 error = zeros(n,1);
+%...
 for i = 1:numBags
     for j = 1:n
         numError = 0;

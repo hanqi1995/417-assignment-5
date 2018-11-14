@@ -11,12 +11,19 @@ function [ oobErr ] = BaggedTrees( X, Y, numBags )
 %   bagging function
 n = size(X,1);
 error = zeros(n,1);
-%...
 for i = 1:numBags
     for j = 1:n
+        ni=unidrnd(n);
+        a=1:n;
+        K=randperm(length(a));
+        b=a(K(1:ni));
         numError = 0;
         data = X;
-        data(j) = [];
+        for s=1:ni
+            if j==b(s)
+                data(j) = [];
+            end
+        end
         Db = datasample(data, n);
         Mdl = fitctree(Db, Y);
         if(predict(Mdl, X(j))~=Y(j))
@@ -27,5 +34,4 @@ for i = 1:numBags
 end
 
 oobErr = mean(error);
-
 end

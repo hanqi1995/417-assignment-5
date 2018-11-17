@@ -9,29 +9,29 @@ function [ oobErr ] = BaggedTrees( X, Y, numBags )
 %
 %   You may use "fitctree" but do not use "TreeBagger" or any other inbuilt
 %   bagging function
-n = size(X,1);
-error = zeros(n,1);
+obs = size(X,1);
+n = size(X,2);
+Db = zeros(obs,n,numBags);
+%Mdl = zeros(numBags);
+t = zeros(obs,1);
 for i = 1:numBags
-    for j = 1:n
-        ni=unidrnd(n);
-        a=1:n;
-        K=randperm(length(a));
-        b=a(K(1:ni));
-        numError = 0;
-        data = X;
-        for s=1:ni
-            if j==b(s)
-                data(j) = [];
+    Db(:,:,i) = datasample(X, obs);
+    Mdl = fitctree(Db(:,:,i), Y);  
+    
+    for j = 1:obs
+        if(~ismember(X(j,:), Db(:,:,i)))
+            
+            if (predict(Mdl, X(j)) == Y(j))
+                t(j) = t(j)+1;
+            else
+                t(j) = t(j)-1;
             end
         end
-        Db = datasample(data, n);
-        Mdl = fitctree(Db, Y);
-        if(predict(Mdl, X(j))~=Y(j))
-            numError = numError + 1;
-        end
     end
-    error(i) = numError / n;
 end
 
-oobErr = mean(error);
+oobErr = mean((sign(t) + 1)/2);
+
+
+
 end

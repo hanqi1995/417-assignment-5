@@ -12,26 +12,21 @@ function [ oobErr ] = BaggedTrees( X, Y, numBags )
 obs = size(X,1);
 n = size(X,2);
 Db = zeros(obs,n,numBags);
-%Mdl = zeros(numBags);
 t = zeros(obs,1);
 for i = 1:numBags
     Db(:,:,i) = datasample(X, obs);
-    Mdl = fitctree(Db(:,:,i), Y);  
-    
+    Mdl = fitctree(Db(:,:,i), Y);
+    xi = ~ismember(X, Db(:,:,i), 'rows');
     for j = 1:obs
-        if(~ismember(X(j,:), Db(:,:,i)))
-            
-            if (predict(Mdl, X(j)) == Y(j))
+        if(xi(j))
+             if (predict(Mdl, X(j,:)) == Y(j))
                 t(j) = t(j)+1;
             else
                 t(j) = t(j)-1;
-            end
+             end
         end
     end
 end
 
-oobErr = mean((sign(t) + 1)/2);
-
-
-
+oobErr = -mean((sign(t) - 1)/2);
 end

@@ -27,7 +27,13 @@ for i = 1:numBags
         end
     end
 end
+%break the ties
+%{
 for i = 1:obs
-    if
+    if(t(i) == 0)
+        t(i) = sign(rand-0.5);
+    end
+end
+%}
 oobErr = -mean((sign(t) - 1)/2);
 end

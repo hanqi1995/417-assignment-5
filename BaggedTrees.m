@@ -13,13 +13,14 @@ obs = size(X,1);
 n = size(X,2);
 Db = zeros(obs,n,numBags);
 t = zeros(obs,1);
+Mdl = cell(n);
 for i = 1:numBags
     Db(:,:,i) = datasample(X, obs);
-    Mdl = fitctree(Db(:,:,i), Y);
+    Mdl{i} = fitctree(Db(:,:,i), Y);
     xi = ~ismember(X, Db(:,:,i), 'rows');
     for j = 1:obs
         if(xi(j))
-             if (predict(Mdl, X(j,:)) == Y(j))
+             if (predict(Mdl{i}, X(j,:)) == Y(j))
                 t(j) = t(j)+1;
             else
                 t(j) = t(j)-1;
